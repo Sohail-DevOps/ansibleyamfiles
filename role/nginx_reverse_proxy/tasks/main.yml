@@ -1,0 +1,28 @@
+
+# tasks/main.yml
+---
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: present
+  become: true
+
+- name: Copy Nginx reverse proxy configuration
+  template:
+    src: reverse_proxy.conf.j2
+    dest: /etc/nginx/sites-available/reverse_proxy
+  become: true
+
+- name: Enable reverse proxy configuration
+  command: ln -s /etc/nginx/sites-available/reverse_proxy /etc/nginx/sites-enabled/
+  become: true
+  notify:
+    - Reload Nginx
+
+- name: Ensure Nginx is running
+  service:
+    name: nginx
+    state: started
+    enabled: true
+  become: true
+

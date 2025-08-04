@@ -1,0 +1,27 @@
+
+---
+- name: Install full curl on RHEL-based systems
+  hosts: all
+  become: true
+  tasks:
+
+    - name: Check if curl-minimal is installed
+      shell: rpm -q curl-minimal
+      register: curl_minimal_installed
+      ignore_errors: yes
+
+    - name: Remove curl-minimal if installed
+      yum:
+        name: curl-minimal
+        state: absent
+      when: curl_minimal_installed.rc == 0
+
+    - name: Ensure yum cache is updated
+      yum:
+        update_cache: yes
+
+    - name: Install latest version of curl
+      yum:
+        name: curl
+        state: latest
+

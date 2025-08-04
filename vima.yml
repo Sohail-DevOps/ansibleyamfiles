@@ -1,0 +1,34 @@
+
+---
+- name: Extract VIM version and architecture details from source-built VIM
+  hosts: all
+  become: true
+  gather_facts: no
+
+  tasks:
+
+    - name: Get VIM version line
+      shell: vim --version | head -n 1
+      register: vim_version_output
+      changed_when: false
+
+    - name: Get system architecture
+      shell: uname -m
+      register: system_arch
+      changed_when: false
+
+    - name: Parse VIM version from output
+      set_fact:
+        vim_version_parsed: "{{ vim_version_output.stdout | regex_search('([0-9]+\\.[0-9]+)') }}"
+
+    - name: Create CSV header and data
+      set_fact:
+        vim_csv: |
+          package_name,package_version,package_architecture
+          vim,{{ vim_version_parsed }},{{ system_arch.stdout }}
+
+    - name: Write to CSV file
+      copy:
+        content: "{{ vim_csv }}"
+        dest: /tmp/vim_source_version_report.csv
+

@@ -1,0 +1,70 @@
+
+---
+- name: Prepare and install custom curl 8.15 on RHEL hosts
+  hosts: all
+  become: true
+  gather_facts: true
+
+  tasks:
+
+    - name: Ensure this playbook only runs on RHEL systems
+      assert:
+        that: ansible_os_family == "RedHat"
+        fail_msg: "This playbook is only intended for RHEL-based systems."
+        success_msg: "Confirmed RHEL-based system."
+
+    - name: Ensure required RPMs exist locally (download only once)
+      delegate_to: localhost
+      run_once: true
+      block:
+        - name: Download curl 8.15.0 RPM
+          get_url:
+            url: https://mirror.city-fan.org/ftp/contrib/sysutils/Mirroring/curl-8.15.0-1.0.cf.rhel8.x86_64.rpm
+            dest: /tmp/curl-8.15.0-1.0.cf.rhel8.x86_64.rpm
+
+        - name: Download libcurl 8.15.0 RPM
+          get_url:
+            url: https://mirror.city-fan.org/ftp/contrib/sysutils/Mirroring/libcurl-8.15.0-1.0.cf.rhel8.x86_64.rpm
+            dest: /tmp/libcurl-8.15.0-1.0.cf.rhel8.x86_64.rpm
+
+        - name: Download GPG key
+          get_url:
+            url: https://mirror.city-fan.org/ftp/contrib/GPG-KEYS/RPM-GPG-KEY-city-fan.org-rhel-8
+            dest: /tmp/RPM-GPG-KEY-city-fan.org-rhel-8
+
+    - name: Copy RPMs and GPG key to target hosts
+      copy:
+        src: "{{ item }}"
+        dest: /tmp/
+        mode: '0644'
+      loop:
+        - /tmp/curl-8.15.0-1.0.cf.rhel8.x86_64.rpm
+        - /tmp/libcurl-8.15.0-1.0.cf.rhel8.x86_64.rpm
+        - /tmp/RPM-GPG-KEY-city-fan.org-rhel-8
+
+    - name: Import the city-fan.org GPG key
+      command: rpm --import /tmp/RPM-GPG-KEY-city-fan.org-rhel-8
+
+    - name: Install libcurl and curl RPMs
+      command: >
+        rpm -Uvh --replacepkgs /tmp/libcurl-8.15.0-1.0.cf.rhel8.x86_64.rpm
+                   /tmp/curl-8.15.0-1.0.cf.rhel8.x86_64.rpm
+
+    - name: Verify curl package integrity
+      command: rpm -vV curl
+      register: verify_output
+      changed_when: false
+
+    - name: Show verification output
+      debug:
+        var: verify_output.stdout_lines
+
+    - name: Check installed curl version
+      command: curl --version
+      register: curl_version
+      changed_when: false
+
+    - name: Display installed curl version
+      debug:
+        var: curl_version.stdout_lines
+

@@ -1,0 +1,19 @@
+
+---
+- name: Uninstall curl
+  hosts: all
+  become: true
+  tasks:
+
+    - name: Uninstall curl on Debian-based systems
+      apt:
+        name: curl
+        state: absent
+      when: ansible_os_family == "Debian"
+
+    - name: Uninstall curl on RedHat-based systems
+      yum:
+        name: curl
+        state: absent
+      when: ansible_os_family == "RedHat"
+

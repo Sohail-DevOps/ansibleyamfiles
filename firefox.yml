@@ -1,0 +1,23 @@
+
+---
+- name: Install Firefox on Windows
+  hosts: windows
+  gather_facts: no
+  tasks:
+
+    - name: Create temp directory
+      win_file:
+        path: C:\Temp
+        state: directory
+
+    - name: Download Firefox installer
+      win_get_url:
+        url: "https://download.mozilla.org/?product=firefox-latest-ssl&os=win64&lang=en-US"
+        dest: C:\Temp\FirefoxInstaller.exe
+
+    - name: Install Firefox silently
+      win_package:
+        path: C:\Temp\FirefoxInstaller.exe
+        arguments: /S
+        state: present
+

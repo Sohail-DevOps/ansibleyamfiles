@@ -1,0 +1,23 @@
+
+---
+- name: Install or Upgrade Google Chrome on Windows
+  hosts: windows
+  gather_facts: no
+  tasks:
+
+    - name: Create temp directory for Chrome installer
+      win_file:
+        path: C:\Temp
+        state: directory
+
+    - name: Download Google Chrome MSI installer
+      win_get_url:
+        url: https://dl.google.com/tag/s/appguid%3D%7B8A69D345-D564-463C-AFF1-A69D9E530F96%7D&iid=%7B00000000-0000-0000-0000-000000000000%7D&lang=en&browser=5&usagestats=0&appname=Chrome&needsadmin=true/dl/chrome/install/googlechromestandaloneenterprise64.msi
+        dest: C:\Temp\googlechrome.msi
+
+    - name: Install or Upgrade Google Chrome
+      win_package:
+        path: C:\Temp\googlechrome.msi
+        state: present
+        arguments: /qn
+

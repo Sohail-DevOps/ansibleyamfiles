@@ -1,0 +1,25 @@
+
+---
+- name: Extract VIM version info using `vim --version`
+  hosts: all
+  become: true
+  gather_facts: no
+
+  tasks:
+    - name: Run `vim --version` command
+      shell: vim --version | head -n 1
+      register: vim_version_output
+      changed_when: false
+      ignore_errors: yes
+
+    - name: Parse vim version line into CSV-friendly format
+      set_fact:
+        vim_version_csv: |
+          vim_version
+          {{ vim_version_output.stdout | default('N/A') }}
+
+    - name: Write vim version to CSV file
+      copy:
+        content: "{{ vim_version_csv }}"
+        dest: /tmp/vim_version_report.csv
+

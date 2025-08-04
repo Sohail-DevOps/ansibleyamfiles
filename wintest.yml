@@ -1,0 +1,29 @@
+
+---
+- name: Manage Windows Servers
+  hosts: windows
+  gather_facts: no
+
+  tasks:
+
+    - name: Ensure a directory exists
+      win_file:
+        path: C:\ansible_test
+        state: directory
+
+    - name: Create a file
+      win_copy:
+        content: "This file was created by Ansible!"
+        dest: C:\ansible_test\info.txt
+
+    - name: Install Windows Feature (e.g. IIS)
+      win_feature:
+        name: Web-Server
+        state: present
+
+    - name: Start Windows service (w32time)
+      win_service:
+        name: w32time
+        start_mode: auto
+        state: started
+

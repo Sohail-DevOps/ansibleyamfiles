@@ -1,0 +1,70 @@
+
+---
+- name: Prepare and install custom curl on all target hosts
+  hosts: all
+  become: true
+  tasks:
+
+    - name: Ensure required RPMs exist locally (download only once)
+      delegate_to: localhost
+      run_once: true
+      block:
+        - name: Download curl RPM
+          get_url:
+            url: https://mirror.city-fan.org/ftp/contrib/sysutils/Mirroring/curl-8.15.0-1.0.cf.rhel8.x86_64.rpm
+            dest: /tmp/curl-8.15.0-1.0.cf.rhel8.x86_64.rpm
+
+        - name: Download libcurl RPM
+          get_url:
+            url: https://mirror.city-fan.org/ftp/contrib/sysutils/Mirroring/libcurl-8.15.0-1.0.cf.rhel8.x86_64.rpm
+            dest: /tmp/libcurl-8.15.0-1.0.cf.rhel8.x86_64.rpm
+
+        - name: Download GPG key
+          get_url:
+            url: https://mirror.city-fan.org/ftp/contrib/GPG-KEYS/RPM-GPG-KEY-city-fan.org-rhel-8
+            dest: /tmp/RPM-GPG-KEY-city-fan.org-rhel-8
+
+    - name: Copy curl RPM to target host
+      copy:
+        src: /tmp/curl-8.15.0-1.0.cf.rhel8.x86_64.rpm
+        dest: /tmp/
+        mode: '0644'
+
+    - name: Copy libcurl RPM to target host
+      copy:
+        src: /tmp/libcurl-8.15.0-1.0.cf.rhel8.x86_64.rpm
+        dest: /tmp/
+        mode: '0644'
+
+    - name: Copy GPG key to target host
+      copy:
+        src: /tmp/RPM-GPG-KEY-city-fan.org-rhel-8
+        dest: /tmp/
+        mode: '0644'
+
+    - name: Install curl and libcurl RPMs
+      command: >
+        rpm -Uvh /tmp/libcurl-8.15.0-1.0.cf.rhel8.x86_64.rpm
+                 /tmp/curl-8.15.0-1.0.cf.rhel8.x86_64.rpm
+
+    - name: Import the city-fan.org GPG key
+      command: rpm --import /tmp/RPM-GPG-KEY-city-fan.org-rhel-8
+
+    - name: Verify curl package integrity
+      command: rpm -vV curl
+      register: verify_output
+      changed_when: false
+
+    - name: Show verification output
+      debug:
+        var: verify_output.stdout_lines
+
+    - name: Check curl version
+      command: curl --version
+      register: curl_version
+      changed_when: false
+
+    - name: Display curl version
+      debug:
+        var: curl_version.stdout_lines
+

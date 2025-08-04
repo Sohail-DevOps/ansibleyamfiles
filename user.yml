@@ -1,0 +1,18 @@
+
+---
+- hosts: all
+  gather_facts: no
+  become: true
+  tasks:
+    - name: Remove Users and Their Home Directories
+      user:
+        name: "{{ item }}"
+        state: absent
+        remove: yes
+      loop:
+        - sohail
+        - ali
+        - alia
+        - hina
+...
+

@@ -1,0 +1,17 @@
+
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: Install Apache HTTPD Server in Redhat
+      yum:
+        name: httpd
+        state: present
+      when: ansible_os_family == "RedHat"
+    - name:  Install Apache HTTPD Server in apache2
+      apt:
+        name: apache2
+        state: present
+      when:  ansible_os_family == "Debian"
+
+...

@@ -1,0 +1,23 @@
+
+---
+- name: Install specific version of Google Chrome on Windows
+  hosts: windows
+  gather_facts: no
+  tasks:
+
+    - name: Create Temp directory on Windows
+      win_file:
+        path: C:\Temp
+        state: directory
+
+    - name: Copy Google Chrome 136.0.7103.93 MSI to Windows
+      win_copy:
+        src: /home/ansible/chrome.msi
+        dest: C:\Temp\chrome.msi
+
+    - name: Install Google Chrome 136.0.7103.93
+      win_package:
+        path: C:\Temp\chrome.msi
+        state: present
+        arguments: /qn
+

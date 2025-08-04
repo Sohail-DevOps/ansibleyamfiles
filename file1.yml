@@ -1,0 +1,13 @@
+
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: Create a file
+      file:
+        path: /tmp/file1.txt
+        state: touch
+        owner: ansible
+        group: ansible
+
+...

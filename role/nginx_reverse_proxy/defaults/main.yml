@@ -1,0 +1,6 @@
+
+# defaults/main.yml
+nginx_port: 80
+backend_port: 5000  # Change this depending on your backend (Node.js or Flask)
+backend_host: "localhost"
+

@@ -1,0 +1,28 @@
+
+---
+- hosts: all
+  gather_facts: no
+  become: true
+  vars:
+    companyname: AAA
+    location: BBB  
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: Install Apache HTTP Servers
+      apt:
+        name: apache2
+        state: latest
+    - name: Enable the Http Service
+      systemd:
+        name: apache2
+        enabled: true
+    - name: Start the Http Service
+      systemd:
+        name: apache2
+        state: started
+    - name: Copy index.html
+      template:
+        src: /home/ansible/index.html
+        dest: /var/www/html/index.html
+

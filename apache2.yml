@@ -1,0 +1,23 @@
+
+---
+- hosts: all
+  gather_facts: no
+  # Ensure tasks are run with root privileges
+  become_user: ansible  # Ensure tasks are run as root
+  become: true
+  tasks:
+    - name: Remove Apache2 package
+      apt:
+        name: apache2
+        state: absent  # Uninstall Apache2
+
+    - name: Disable Apache2 service
+      systemd:
+        name: apache2
+        enabled: false  # Disable Apache2 from starting on boot
+
+    - name: Stop Apache2 service
+      systemd:
+        name: apache2
+        state: stopped  # Stop the Apache2 service if it's running
+

@@ -1,0 +1,13 @@
+
+
+
+---
+- name: Uninstall Google Chrome on Windows
+  hosts: windows
+  gather_facts: no
+  tasks:
+    - name: Uninstall Google Chrome using product_id
+      win_package:
+        product_id: '{66793499-0B07-380D-8FDE-467BB6263225}'  # Replace with actual GUID
+        state: absent
+

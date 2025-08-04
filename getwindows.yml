@@ -1,0 +1,21 @@
+
+---
+- name: Get Windows Update History and Export to CSV
+  hosts: windows
+  gather_facts: no
+  tasks:
+
+    - name: Export Windows update history to CSV
+      win_shell: |
+        Get-WmiObject -Class "Win32_QuickFixEngineering" |
+        Select-Object HotFixID, Description, InstalledOn, InstalledBy |
+        Export-Csv -Path "C:\Windows\Temp\update_history.csv" -NoTypeInformation
+      args:
+        executable: powershell.exe
+
+    - name: Fetch the update history CSV file from Windows host
+      fetch:
+        src: C:\Windows\Temp\update_history.csv
+        dest: ./windows_updates/{{ inventory_hostname }}_update_history.csv
+        flat: yes
+

@@ -1,0 +1,28 @@
+
+---
+- name: Collect VIM package info on RHEL-based systems
+  hosts: all
+  become: true
+  gather_facts: no
+
+  tasks:
+
+    - name: Run rpm command to get VIM-related packages
+      shell: rpm -qa | grep vim
+      register: vim_packages
+      changed_when: false
+
+    - name: Set fact with CSV header and package info lines
+      set_fact:
+        vim_csv_lines: |
+          package_name,package_version,package_arch
+          {% for pkg in vim_packages.stdout_lines %}
+          {% set parts = pkg.rsplit('.', 1)[0].rsplit('-', 2) %}
+          {{ parts[0] }},{{ parts[1] }}-{{ parts[2] }},{{ pkg.rsplit('.', 1)[1] }}
+          {% endfor %}
+
+    - name: Write output to CSV file
+      copy:
+        content: "{{ vim_csv_lines }}"
+        dest: /tmp/vim_packages_report.csv
+

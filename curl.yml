@@ -1,0 +1,29 @@
+
+---
+- name: Install latest curl
+  hosts: all
+  become: true
+  tasks:
+
+    - name: Ensure package cache is up to date (Debian)
+      apt:
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Ensure package cache is up to date (RedHat)
+      yum:
+        update_cache: yes
+      when: ansible_os_family == "RedHat"
+
+    - name: Install latest curl on Debian-based systems
+      apt:
+        name: curl
+        state: latest
+      when: ansible_os_family == "Debian"
+
+    - name: Install latest curl on RedHat-based systems
+      yum:
+        name: curl
+        state: latest
+      when: ansible_os_family == "RedHat"
+

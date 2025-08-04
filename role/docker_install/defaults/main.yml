@@ -1,0 +1,5 @@
+---
+# defaults file for docker_install
+docker_users:
+  - ansible
+

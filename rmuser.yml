@@ -1,0 +1,38 @@
+
+
+---
+- name: Remove users from Windows machines
+  hosts: windows
+  gather_facts: no
+  tasks:
+
+    - name: Remove user1 account
+      win_user:
+        name: user1
+        state: absent
+
+    - name: Delete user1 profile folder
+      win_file:
+        path: C:\Users\user1
+        state: absent
+
+    - name: Remove user2 account
+      win_user:
+        name: user2
+        state: absent
+
+    - name: Delete user2 profile folder
+      win_file:
+        path: C:\Users\user2
+        state: absent
+
+    - name: Remove user3 account
+      win_user:
+        name: user3
+        state: absent
+
+    - name: Delete user3 profile folder
+      win_file:
+        path: C:\Users\user3
+        state: absent
+

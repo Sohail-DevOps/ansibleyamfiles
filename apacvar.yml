@@ -1,0 +1,19 @@
+
+---
+- name: Target Playbook
+  hosts: all
+  remote_user: ansible
+  become: true
+  connection: ssh
+  gather_facts: yes
+  vars:
+    pkgname: apache2
+  tasks:
+    - name: install apache2 server
+      action: apt name='{{pkgname}}' state=present
+      notify: restart apache2  
+  handlers:
+    - name: restart apache2
+      action: service name=apache2 state=restarted    
+...
+

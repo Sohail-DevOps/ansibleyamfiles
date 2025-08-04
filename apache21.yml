@@ -1,0 +1,12 @@
+
+---
+- name: Target Playbook
+  hosts: all
+  remote_user: ansible
+  become: true
+  connection: ssh
+  gather_facts: yes
+  tasks:
+    - name: Install Apache2
+      action: apt name=apache2 state=present
+...

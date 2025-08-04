@@ -1,0 +1,37 @@
+
+---
+- name: Create admin users on Windows machines
+  hosts: windows
+  gather_facts: no
+  tasks:
+
+    - name: Create user1
+      win_user:
+        name: user1
+        password: '123456@a'
+        state: present
+        groups:
+          - Administrators
+        password_never_expires: true
+        update_password: always
+
+    - name: Create user2
+      win_user:
+        name: user2
+        password: '123456@a'
+        state: present
+        groups:
+          - Administrators
+        password_never_expires: true
+        update_password: always
+
+    - name: Create user3
+      win_user:
+        name: user3
+        password: '123456@a'
+        state: present
+        groups:
+          - Administrators
+        password_never_expires: true
+        update_password: always
+
